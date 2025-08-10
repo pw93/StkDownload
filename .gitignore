@@ -1,0 +1,33 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# NuGet Packages
+*.nupkg
+packages/
+
+# User-specific files
+*.rsuser
+*.sln.docstates
+
+# Others
+*.log
+*.tmp
+*.cache
+
+# Windows thumbnail cache files
+Thumbs.db
+
+# JetBrains Rider
+.idea/
+
+# Mac system files
+.DS_Store

@@ -1,0 +1,8 @@
+# dataset 設定要下載的資料集名稱，不區分大小寫
+dataset:YahooMajorHolders
+
+# 是否使用代理下載 (true / false)
+is_use_proxy:true
+
+# 全域強制下載模式 (yes / no / by_dataset)
+force_download_mode_global:by_dataset
