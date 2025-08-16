@@ -8,7 +8,7 @@ using ProfitWin.Logging;
 
 namespace StkDownload
 {
-    public abstract class DatasetProviderTemplateA : IDatasetProvider
+    public abstract class DatasetProvider_TemplateA : IDatasetProvider
     {
         protected abstract string DatasetName { get; }
         protected abstract string RawDataDir { get; }

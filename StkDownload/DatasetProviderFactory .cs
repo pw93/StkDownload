@@ -14,8 +14,8 @@ namespace StkDownload
             return name switch
             {
                 DatasetName.YahooMajorHolders => new DatasetProvider_YahooMajorHolders(),
-                DatasetName.FubonIs => new DatasetProvider_FubonIs(),  // 你要另外實作
-                //DatasetName.YahooProfile => new DatasetProvider_FubonIs(),            // 你要另外實作
+                DatasetName.FubonIs => new DatasetProvider_FubonIs(),
+                DatasetName.YahooProfile => new DatasetProvider_YahooProfile(),                
                 _ => throw new ArgumentException($"Unsupported dataset name: {name}")
             };
         }

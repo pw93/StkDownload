@@ -11,19 +11,16 @@ namespace StkDownload
 {
     public class DownloadAgentLocal : IDownloadAgent
     {
-        private ConcurrentQueue<DownloadJob> _tasks;
-
+        private readonly HttpClient _httpClient;
         public DownloadAgentLocal()
         {
-            
+            _httpClient = new HttpClient();
+            _httpClient.Timeout = TimeSpan.FromSeconds(30);
         }
 
         public async Task RunAsync(ConcurrentQueue<DownloadJob> jobs, ConcurrentQueue<DownloadJob> jobs_ok, ConcurrentQueue<DownloadJob> jobs_fail)
         {
-            _tasks = jobs;
-            using var httpClient = new HttpClient();
-
-            while (_tasks.TryDequeue(out var task))
+            while (jobs.TryDequeue(out var task))
             {
                 try
                 {
@@ -35,7 +32,7 @@ namespace StkDownload
 
                     //var content = await httpClient.GetStringAsync(task.Url);
 
-                    var bytes = await httpClient.GetByteArrayAsync(task.Url);
+                    var bytes = await _httpClient.GetByteArrayAsync(task.Url);
 
                     Encoding enc;
                     if (string.IsNullOrEmpty(task.EncodingSrc))
@@ -45,11 +42,16 @@ namespace StkDownload
                     string content = enc.GetString(bytes);                    
 
                     var directory = Path.GetDirectoryName(task.Filename);
-                    Directory.CreateDirectory(directory);
+                    if (!string.IsNullOrEmpty(directory))
+                        Directory.CreateDirectory(directory);
+                    
 
                     await File.WriteAllTextAsync(task.Filename, content, System.Text.Encoding.UTF8);                    
 
                     Logger.logi($"[Local] Saved {task.Filename}");
+
+                    task.Status = DownloadStatus.Ok;
+                    jobs_ok.Enqueue(task);
                 }
                 catch (Exception ex)
                 {
@@ -60,11 +62,13 @@ namespace StkDownload
 
                     if (task.TriedTimes < task.RetryCount)
                     {
-                        _tasks.Enqueue(task); // 失敗且還沒超過重試上限，放回佇列等待下次
+                        jobs.Enqueue(task); // 失敗且還沒超過重試上限，放回佇列等待下次
                     }
                     else
                     {
                         Logger.loge($"[Local] Give up downloading {task.Url} after {task.TriedTimes} attempts.");
+                        task.Status = DownloadStatus.Fail;
+                        jobs_fail.Enqueue(task);
                     }
                 }
                 

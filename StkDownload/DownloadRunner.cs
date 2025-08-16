@@ -167,8 +167,9 @@ namespace StkDownload
 
             var downloaders = new List<IDownloadAgent>();
 
-            // 加本地下載器
-            downloaders.Add(new DownloadAgentLocal());
+            // 加本地下載器            
+            var localAgent = new DownloadAgentLocal();
+            downloaders.Add(localAgent);
 
             if (IsUseProxy)
             {
@@ -189,6 +190,13 @@ namespace StkDownload
                 tasks.Add(downloader.RunAsync(itemsQueue, jobsQueueOk, jobsQueueFail));
             }
             await Task.WhenAll(tasks);
+
+            //-----------------------------
+            // Retry failed jobs by Local
+            while (jobsQueueFail.TryDequeue(out var failedTask))
+                itemsQueue.Enqueue(failedTask);
+
+            await localAgent.RunAsync(itemsQueue, jobsQueueOk, jobsQueueFail);
 
 
             if (!provider.BackupDataset())

@@ -8,9 +8,10 @@ using ProfitWin.Logging;
 
 namespace StkDownload
 {                                           
-    public class DatasetProvider_FubonIs : DatasetProviderTemplateA
+    public class DatasetProvider_FubonIs : DatasetProvider_TemplateA
     {
         protected override string EncodingSrc => "big5";
+        static string aa = Config.FName_Proxy1;
         protected override string DatasetName => "FubonIs";
         protected override string RawDataDir => Config.DName_Raw_fubon_is;
         protected override string BackupDataDir => Config.DName_Raw_fubon_is_backup;        
